@@ -3,6 +3,7 @@ const {
   decodedText,
   getPText,
   extractPhoneticAndAudio,
+  containChinese,
   clearText,
   toJSON,
 } = require("./util.js");
@@ -44,12 +45,20 @@ function testClearText() {
   console.log(text);
 }
 
+function testContainChinese(str) {
+  const result = containChinese(str);
+  console.log(result);
+}
+
 // 定义查询参数
 const query1 = { text: "鄯" };
 const query2 = { text: "国" };
 const query3 = { text: "吐谷渾" };
 const query4 = { text: "吐蕃" };
-testGetText(query1);
-testGetText(query2);
-testGetText(query3);
-testGetText(query4);
+const query5 = { text: "，" };
+// testGetText(query1);
+// testGetText(query2);
+// testGetText(query3);
+// testGetText(query4);
+// testGetText(query5);
+testContainChinese("渾");

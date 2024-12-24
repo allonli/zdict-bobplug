@@ -167,14 +167,24 @@ function getPText(htmlContent, queryText) {
 
   return r;
 }
+
+function containChinese(text) {
+  const regex =
+    /[\u4e00-\u9fa5\u3400-\u4dbf\u{20000}-\u{2a6df}\u{2a700}-\u{2b73f}\u{2b740}-\u{2b81f}\u{2b820}-\u{2ceaf}\u{2f800}-\u{2fa1f}]/u;
+  if (!regex.test(text)) {
+    return false;
+  } else {
+    return true;
+  }
+}
+
 // 去掉这种的垃圾 [ask;request;beg;demand;seek] ∶
 // 去掉各种标签
 function clearText(str) {
-  const regex =
-    /[\u4e00-\u9fa5\u3400-\u4dbf\u{20000}-\u{2a6df}\u{2a700}-\u{2b73f}\u{2b740}-\u{2b81f}\u{2b820}-\u{2ceaf}\u{2f800}-\u{2fa1f}]/u;
-  if (!regex.test(str)) {
+  if (!containChinese(str)) {
     return "";
   }
+
   var removeMatch;
   const text = str.replace(/<[^>]+>/g, " ").trim();
   const checkRegex = /\[[^\]]+\]/;
@@ -394,6 +404,8 @@ function decodedText(str) {
     "&yuml;": "ÿ",
     "&#156;": "œ",
     "&#218;": "Ú",
+    "&mdash;": "—",
+    "&middot;": "·",
   };
 
   // 使用正则表达式替换所有的HTML实体字符
@@ -410,4 +422,5 @@ module.exports = {
   getPText,
   clearText,
   toJSON,
+  containChinese,
 };

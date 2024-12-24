@@ -1,4 +1,9 @@
-const { getLiText, getPText, decodedText } = require("./util.js");
+const {
+  getLiText,
+  getPText,
+  decodedText,
+  containChinese,
+} = require("./util.js");
 
 log(JSON.stringify($env));
 
@@ -57,6 +62,15 @@ function log(msg) {
  * @return {void}
  */
 function translate(query, completion) {
+  if (!containChinese(query.text)) {
+    query.onCompletion({
+      result: {
+        toParagraphs: ["仅支持中文查询"],
+      },
+    });
+    return;
+  }
+
   const url = `https://www.zdic.net/hans/${encodeURIComponent(query.text)}`;
 
   $http.request({
