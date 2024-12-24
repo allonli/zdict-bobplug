@@ -65,6 +65,7 @@ function getLiText(htmlContent, queryText) {
     // const olRegex = /<ol>([\s\S]*?)<\/ol>/g;
     const olRegex = /<ol[^>]*>([\s\S]*?)<\/ol>/;
     const olMatch = divContent.match(olRegex);
+    var olContent = "";
     // 使用正则表达式匹配HTML OL标签内的内容
     if (!olMatch) {
       return {
@@ -73,7 +74,7 @@ function getLiText(htmlContent, queryText) {
         },
       };
     } else {
-      const olContent = olMatch[0];
+      olContent = olMatch[0];
     }
 
     var regex;
