@@ -64,9 +64,17 @@ function getLiText(htmlContent, queryText) {
     // const liRegex = /<ol[^>]*>([\s\S]*?)<\/ol>/g;
     // const olRegex = /<ol>([\s\S]*?)<\/ol>/g;
     const olRegex = /<ol[^>]*>([\s\S]*?)<\/ol>/;
-    // 使用正则表达式匹配HTML OL标签内的内容
     const olMatch = divContent.match(olRegex);
-    const olContent = olMatch[0];
+    // 使用正则表达式匹配HTML OL标签内的内容
+    if (!olMatch) {
+      return {
+        result: {
+          toParagraphs: ["未找到释义"],
+        },
+      };
+    } else {
+      const olContent = olMatch[0];
+    }
 
     var regex;
 
