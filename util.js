@@ -21,6 +21,7 @@ function toJSON(obj) {
   return jsonObj;
 }
 
+// 用于单字提取音频地址或词提取拼音，只在子div中提取，如果没找到将在整个页面搜索dicpy div
 function extractPhoneticAndAudio(htmlContent) {
   // 定义正则表达式，用于提取特定的字符串
   const extractRegex =
@@ -47,9 +48,10 @@ function extractPhoneticAndAudio(htmlContent) {
  * @param {string} htmlContent - 包含HTML内容的字符串。
  * @returns {void} - 该函数不返回任何值，而是直接在控制台输出提取的文本。
  */
-function getLiText(htmlContent) {
+function getLiText(htmlContent, queryText) {
   // 定义正则表达式，用于匹配具有特定class的<div>标签及其内部内容
-  const divRegex = /<div class="content definitions jnr"[^>]*>([\s\S]*?)<\/div>/;
+  const divRegex =
+    /<div class="content definitions jnr"[^>]*>([\s\S]*?)<\/div>/;
   // 使用正则表达式匹配HTML内容
   const divMatch = htmlContent.match(divRegex);
 
@@ -90,15 +92,12 @@ function getLiText(htmlContent) {
       arr.push(decodeText);
     }
 
-    if (arr.length === 0) {
-      arr.push("未找到释义");
-    }
-
     const pair = extractPhoneticAndAudio(divContent);
 
     const r = {
       result: {
         toDict: {
+          word: queryText,
           additions: [{ name: "详细解释", value: "--" }],
           phonetics: [
             {
@@ -111,7 +110,7 @@ function getLiText(htmlContent) {
             },
           ],
         },
-        toParagraphs: arr,
+        toParagraphs: arr.length === 0 ? ["未找到释义"] : arr,
       },
     };
 
@@ -119,7 +118,7 @@ function getLiText(htmlContent) {
   }
 }
 
-function getPText(htmlContent) {
+function getPText(htmlContent, queryText) {
   // 正则表达式匹配<div class="jnr">内的所有<p>标签内容
   const regex = /<div class="jnr">[\s\S]*?<\/div>/g;
   const matches = decodedText(htmlContent).match(regex);
@@ -130,24 +129,39 @@ function getPText(htmlContent) {
     matches.forEach((match) => {
       // 检查是否包含<p>标签，没有直接输出，有则提取<p>标签内容
       if (!/<p>/.test(match)) {
-        arr.push(clearText(matches[0]));
+        var itemText = clearText(matches[0]);
+        if (itemText.length > 0) {
+          arr.push(itemText);
+        }
       } else {
         // 正则表达式匹配每个<p>标签内容
         const pRegex = /<p>([\s\S]*?)<\/p>/g;
         let pMatch;
         while ((pMatch = pRegex.exec(match)) !== null) {
-          arr.push(clearText(pMatch[1]));
+          var itemText = clearText(pMatch[1]);
+          if (itemText.length > 0) {
+            arr.push(itemText);
+          }
         }
       }
     });
   }
 
+  const pinyinRegex = /<span class="dicpy">([^<]+)<\/span>/;
+  const piyinMatch = htmlContent.match(pinyinRegex);
+  var word = queryText;
+  // 使用正则表达式找到拼音
+  if (piyinMatch) {
+    word = queryText + " [" + piyinMatch[1] + "]";
+  }
+
   const r = {
     result: {
       toDict: {
+        word: word,
         additions: [{ name: "详细解释", value: "--" }],
       },
-      toParagraphs: arr,
+      toParagraphs: arr.length === 0 ? ["未找到释义"] : arr,
     },
   };
 
@@ -156,16 +170,19 @@ function getPText(htmlContent) {
 // 去掉这种的垃圾 [ask;request;beg;demand;seek] ∶
 // 去掉各种标签
 function clearText(str) {
+  const regex =
+    /[\u4e00-\u9fa5\u3400-\u4dbf\u{20000}-\u{2a6df}\u{2a700}-\u{2b73f}\u{2b740}-\u{2b81f}\u{2b820}-\u{2ceaf}\u{2f800}-\u{2fa1f}]/u;
+  if (!regex.test(str)) {
+    return "";
+  }
   var removeMatch;
   const text = str.replace(/<[^>]+>/g, " ").trim();
-
   const checkRegex = /\[[^\]]+\]/;
   if (checkRegex.test(text)) {
     removeMatch = text.replace(checkRegex, "").replace(" ∶", " ");
   } else {
     removeMatch = text;
   }
-
   return removeMatch;
 }
 
@@ -178,6 +195,23 @@ function clearText(str) {
 function decodedText(str) {
   // 定义一个对象，包含常见的HTML实体字符及其对应的字符
   const entities = {
+    "&amp;": "&",
+    "&lt;": "<",
+    "&gt;": ">",
+    "&quot;": '"',
+    "&apos;": "'",
+    "&nbsp;": " ",
+    "&ldquo;": "“",
+    "&rdquo;": "”",
+    "&bull;": "•",
+    "&iexcl;": "¡",
+    "&cent;": "¢",
+    "&pound;": "£",
+    "&curren;": "¤",
+    "&yen;": "¥",
+    "&brvbar;": "¦",
+    "&sect;": "§",
+    "&uml;": "¨",
     "&copy;": "©",
     "&#219;": "Û",
     "&reg;": "®",

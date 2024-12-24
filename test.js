@@ -11,7 +11,7 @@ const fs = require("fs");
 const path = require("path");
 const axios = require("axios");
 
-function testGetLiText(query) {
+function testGetText(query) {
   // 定义请求的URL
   const url = `https://www.zdic.net/hans/${encodeURIComponent(query.text)}`;
   // 发送GET请求
@@ -24,8 +24,7 @@ function testGetLiText(query) {
       } else if (query.text.length > 1) {
         r = getPText(response.data);
       }
-      console.log(r.result.toDict.phonetics);
-      console.log(r.result);
+      console.log(JSON.stringify(r));
     })
     .catch((error) => {
       console.error("请求失败:", error);
@@ -46,7 +45,11 @@ function testClearText() {
 }
 
 // 定义查询参数
-const query = { text: "鄯" };
+const query1 = { text: "鄯" };
 const query2 = { text: "国" };
-testGetLiText(query);
-testGetLiText(query2);
+const query3 = { text: "吐谷渾" };
+const query4 = { text: "吐蕃" };
+testGetText(query1);
+testGetText(query2);
+testGetText(query3);
+testGetText(query4);

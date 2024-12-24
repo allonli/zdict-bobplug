@@ -68,9 +68,9 @@ function translate(query, completion) {
       var r;
       // 检查query的字符串长度
       if (query.text.length === 1) {
-        r = getLiText(htmlContent);
+        r = getLiText(htmlContent, query.text);
       } else if (query.text.length > 1) {
-        r = getPText(htmlContent);
+        r = getPText(htmlContent, query.text);
       }
       query.onCompletion(r);
     },
