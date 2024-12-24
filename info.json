@@ -4,7 +4,6 @@
   "category": "translate",
   "name": "汉典",
   "summary": "汉语字词查询",
-  "icon": "001",
   "author": "allonli",
   "homepage": "https://github.com/allonli",
   "minBobVersion": "1.8.0"
