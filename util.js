@@ -223,6 +223,7 @@ function decodedText(str) {
     "&ldquo;": "“",
     "&rdquo;": "”",
     "&bull;": "•",
+    "&#x2022;": "•",
     "&iexcl;": "¡",
     "&cent;": "¢",
     "&pound;": "£",
