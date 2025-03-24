@@ -41,8 +41,20 @@ function testExtractPhoneticAndAudio() {
 }
 
 function testClearText() {
-  const text = clearText("(1)   [examine;check;inspect;review] ∶查看;查考");
-  console.log(text);
+  const text = clearText(
+`“天人莫测，言本则甚深”
+
+摘录来自
+
+大慈恩寺三藏法师传
+
+[唐] 释慧立
+
+此材料受版权保护。`)
+    
+  const copyrightPattern = /摘录来自[\s\S]*此材料受版权保护。/;
+  const cleanedText = text.replace(copyrightPattern, "").replace("“", "").replace("”", "").trim();
+  console.log(cleanedText);
 }
 
 function testContainChinese(str) {
@@ -64,5 +76,6 @@ const query7 = { text: "噍" };
 // testGetText(query4);
 // testGetText(query5);
 // testGetText(query6);
-testGetText(query7);
+// testGetText(query7);
+testClearText();
 // testContainChinese("䫻");

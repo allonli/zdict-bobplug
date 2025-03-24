@@ -84,7 +84,10 @@ function translate(query, completion) {
       if (query.text.length === 1) {
         r = getLiText(htmlContent, query.text);
       } else if (query.text.length > 1) {
-        r = getPText(htmlContent, query.text);
+        var q = query.text
+        const copyrightPattern = /摘录来自[\s\S]*此材料受版权保护。/;
+        const cleanedText = q.replace(copyrightPattern, "").replace("“", "").replace("”", "").trim();
+        r = getPText(htmlContent, cleanedText);
       }
       query.onCompletion(r);
     },
